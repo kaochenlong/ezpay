@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module Ezpay
-  module Invoice
+  class Invoice
     class Carrier
-      attr_reader :type, :number
+      attr_accessor :type, :number
 
       def initialize(type: nil, number: nil)
         @type = type
@@ -11,17 +11,37 @@ module Ezpay
       end
 
       def valid?
-        number &&
-          case type
-          when :barcord
-            /^\/[A-Z0-9\.\-\+]{7}$/.match?(number)
-          when :certificate
-            /^[A-Z]{2}[0-9]{14}$/.match?(number)
-          when :ezpay
-            true
-          else
-            false
-          end
+        false
+      end
+    end
+
+    class BarcodeCarrier < Carrier
+      def initialize(number)
+        super(type: :barcode, number: number)
+      end
+
+      def valid?
+        number && /^\/[A-Z0-9\.\-\+]{7}$/.match?(number)
+      end
+    end
+
+    class CertificateCarrier < Carrier
+      def initialize(number)
+        super(type: :certificate, number: number)
+      end
+
+      def valid?
+        number && /^[A-Z]{2}[0-9]{14}$/.match?(number)
+      end
+    end
+
+    class EzPayCarrier < Carrier
+      def initialize(number)
+        super(type: :ezpay, number: number)
+      end
+
+      def valid?
+        true
       end
     end
   end

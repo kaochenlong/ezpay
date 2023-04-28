@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Ezpay
-  module Invoice
+  class Invoice
     class Order
       attr_reader :items
 

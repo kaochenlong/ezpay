@@ -8,19 +8,29 @@ FactoryBot.define do
     number { "" }
 
     trait :barcode do
-      type { :barcord }
-      number { "/DE689FQ" }
+      type { :barcode }
+      initialize_with { Ezpay::Invoice::BarcodeCarrier.new("/DE689FQ") }
     end
 
     trait :certificate do
       type { :certificate }
-      number { "AB12345678901234" }
+      initialize_with do
+        Ezpay::Invoice::CertificateCarrier.new("AB12345678901234")
+      end
     end
 
     trait :ezpay do
       type { :ezpay }
-      number { Faker::Lorem.characters(number: 16).upcase }
+      initialize_with do
+        Ezpay::Invoice::EzPayCarrier.new(
+          Faker::Lorem.characters(number: 16).upcase
+        )
+      end
     end
+
+    factory :barcode_carrier, traits: [:barcode]
+    factory :certificate_carrier, traits: [:certificate]
+    factory :ezpay_carrier, traits: [:ezpay]
 
     initialize_with { new(**attributes) }
   end

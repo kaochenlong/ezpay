@@ -5,11 +5,11 @@
 # 零稅率：tax_zero
 
 module Ezpay
-  module Invoice
+  class Invoice
     class Tax
       attr_accessor :type, :rate
 
-      def initialize(type: :taxable, rate: ENV['DEFAULT_TAX_RATE'].to_i)
+      def initialize(type: :taxable, rate: ENV["DEFAULT_TAX_RATE"].to_i)
         @type = type
         @rate = type == :taxable ? rate : 0
       end

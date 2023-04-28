@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'forwardable'
+require "forwardable"
 
 module Ezpay
-  module Invoice
+  class Invoice
     class OrderItem
       extend Forwardable
       attr_reader :name, :quantity, :price, :unit, :tax
@@ -12,18 +12,18 @@ module Ezpay
         name: nil,
         price: nil,
         quantity: 1,
-        unit: ENV.fetch('DEFAULT_UNIT', nil),
+        unit: ENV.fetch("DEFAULT_UNIT", nil),
         tax_type: :taxable,
-        tax_rate: ENV['DEFAULT_TAX_RATE'].to_i
+        tax_rate: ENV["DEFAULT_TAX_RATE"].to_i
       )
         if name.nil?
           raise Ezpay::Invoice::Error::OrderItemFieldMissingError,
-                'item name is required'
+                "item name is required"
         end
 
         if price.nil?
           raise Ezpay::Invoice::Error::OrderItemFieldMissingError,
-                'item price is required'
+                "item price is required"
         end
 
         @name = name

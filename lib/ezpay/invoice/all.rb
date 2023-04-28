@@ -2,6 +2,8 @@
 
 %w[
   ezpay/version
+  ezpay/invoice/invoice
+  ezpay/invoice/buyer
   ezpay/invoice/error
   ezpay/invoice/client
   ezpay/invoice/tax

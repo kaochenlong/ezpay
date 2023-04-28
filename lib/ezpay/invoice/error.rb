@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
-require 'forwardable'
+require "forwardable"
 
 module Ezpay
-  module Invoice
+  class Invoice
     module Error
       class OrderItemFieldMissingError < StandardError
+      end
+      class CompanyUBNFormatError < StandardError
+      end
+      class BuyerNameFormatError < StandardError
       end
     end
   end
