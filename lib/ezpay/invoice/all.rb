@@ -7,6 +7,7 @@
   ezpay/invoice/tax
   ezpay/invoice/order
   ezpay/invoice/order_item
+  ezpay/invoice/carrier
 ].each do |mod|
   require mod
 rescue LoadError
