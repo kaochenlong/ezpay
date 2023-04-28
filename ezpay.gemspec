@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ['eddie@5xcampus.com']
 
   spec.summary = 'ezPay'
-  spec.description = 'Service and Helper for ezPay'
+  spec.description = 'API Wrapper for ezPay services'
   spec.homepage = 'https://kaochenlong.com'
   spec.license = 'MIT'
   spec.required_ruby_version = '>= 2.6.0'
@@ -36,4 +36,5 @@ Gem::Specification.new do |spec|
 
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
+  spec.metadata['rubygems_mfa_required'] = 'true'
 end

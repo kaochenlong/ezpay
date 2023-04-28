@@ -6,7 +6,7 @@
 module Ezpay
   module Invoice
     class Tax
-      attr_reader :type, :rate
+      attr_accessor :type, :rate
 
       def initialize(type: :taxable, rate: ENV["DEFAULT_TAX_RATE"].to_i)
         @type = type
