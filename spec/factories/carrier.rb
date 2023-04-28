@@ -4,33 +4,40 @@ require "faker"
 
 FactoryBot.define do
   factory :carrier, class: Ezpay::Invoice::Carrier do
-    type { nil }
-    number { "" }
-
     trait :barcode do
-      type { :barcode }
-      initialize_with { Ezpay::Invoice::BarcodeCarrier.new("/DE689FQ") }
+      number { "/DE689FQ" }
+
+      initialize_with do
+        Ezpay::Invoice::BarcodeCarrier.new(attributes[:number])
+      end
     end
 
     trait :certificate do
-      type { :certificate }
+      number { "AB12345678901234" }
+
       initialize_with do
-        Ezpay::Invoice::CertificateCarrier.new("AB12345678901234")
+        Ezpay::Invoice::CertificateCarrier.new(attributes[:number])
       end
     end
 
     trait :ezpay do
-      type { :ezpay }
+      number { Faker::Lorem.characters(number: 16).upcase }
+
+      initialize_with { Ezpay::Invoice::EzPayCarrier.new(attributes[:number]) }
+    end
+
+    trait :donation do
+      number { "123" }
+
       initialize_with do
-        Ezpay::Invoice::EzPayCarrier.new(
-          Faker::Lorem.characters(number: 16).upcase
-        )
+        Ezpay::Invoice::DonationCarrier.new(attributes[:number])
       end
     end
 
     factory :barcode_carrier, traits: [:barcode]
     factory :certificate_carrier, traits: [:certificate]
     factory :ezpay_carrier, traits: [:ezpay]
+    factory :donation_carrier, traits: [:donation]
 
     initialize_with { new(**attributes) }
   end

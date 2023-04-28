@@ -41,7 +41,17 @@ module Ezpay
       end
 
       def valid?
-        true
+        number && number.length > 0
+      end
+    end
+
+    class DonationCarrier < Carrier
+      def initialize(number)
+        super(type: :donation, number: number)
+      end
+
+      def valid?
+        number && /^[\d]{3,7}$/.match?(number)
       end
     end
   end

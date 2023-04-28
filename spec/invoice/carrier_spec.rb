@@ -27,8 +27,20 @@ RSpec.describe Ezpay::Invoice::Carrier do
 
   context "ezPay 電子發票載具" do
     it "有效的格式" do
-      carrier = build(:ezpay_carrier)
+      carrier = build(:ezpay_carrier, number: "1234")
       expect(carrier).to be_valid
+    end
+  end
+
+  context "使用捐贈碼" do
+    it "有效的格式（3 ~ 7 碼數字）" do
+      carrier = build(:donation_carrier, number: "1234")
+      expect(carrier).to be_valid
+    end
+
+    it "無效的格式" do
+      carrier = build(:donation_carrier, number: "123000123")
+      expect(carrier).not_to be_valid
     end
   end
 end
