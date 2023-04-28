@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require 'ezpay'
+require 'dotenv/load'
+require 'ezpay/invoice/all'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
