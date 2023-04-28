@@ -34,13 +34,13 @@ module Ezpay
       def initialize(name: nil, ubn:, email: nil, address: nil)
         if valid_vat_number?(ubn)
           if name && name.length > 60
-            raise Ezpay::Invoice::Error::BuyerNameFormatError, "買受人姓名最多 30 個字"
+            raise Ezpay::Invoice::Error::BuyerNameFormatError, "買受人姓名最多 60 個字"
           end
 
           name = ubn if name.to_s.empty?
           super(type: :company, ubn:, name:, email:, address:)
         else
-          raise Ezpay::Invoice::Error::CompanyUBNFormatError
+          raise Ezpay::Invoice::Error::CompanyUBNFormatError, "公司統一編號格式有誤"
         end
       end
 

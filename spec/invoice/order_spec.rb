@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Ezpay::Invoice::Order do
-  let(:order) { build(:order) }
+  let(:order) { build(:order, serial: "3345678") }
   let(:item) { build(:order_item, price: 100) }
 
   context "訂單（Order）只有一個訂單項目（OrderItem）" do

@@ -17,13 +17,11 @@ module Ezpay
         tax_rate: ENV["DEFAULT_TAX_RATE"].to_i
       )
         if name.nil?
-          raise Ezpay::Invoice::Error::OrderItemFieldMissingError,
-                "item name is required"
+          raise Ezpay::Invoice::Error::OrderItemFieldMissingError, "缺少品項名稱"
         end
 
         if price.nil?
-          raise Ezpay::Invoice::Error::OrderItemFieldMissingError,
-                "item price is required"
+          raise Ezpay::Invoice::Error::OrderItemFieldMissingError, "缺少品項售價"
         end
 
         @name = name

@@ -2,24 +2,21 @@
 
 RSpec.describe Ezpay::Invoice do
   context "個人發票（B2C）" do
-    it "不使用載具也不捐贈" do
-      buyer = build(:personal_buyer)
+    let(:buyer) { build(:personal_buyer) }
 
+    it "不使用載具也不捐贈" do
       invoice = Ezpay::PersonalInvoice.new(buyer:, comment: "Hello World")
 
       expect(invoice.print_flag).to be true
     end
 
     it "發票寫了太多字的備註" do
-      buyer = build(:personal_buyer)
-
       expect {
         Ezpay::PersonalInvoice.new(buyer:, comment: "Hello World" * 50)
       }.to raise_error Ezpay::Invoice::Error::CommentFormatError
     end
 
     it "使用手機條碼載具，而且不想印發票" do
-      buyer = build(:personal_buyer)
       carrier = build(:barcode_carrier)
 
       invoice = Ezpay::PersonalInvoice.new(buyer:, carrier:, print_flag: false)
@@ -27,7 +24,6 @@ RSpec.describe Ezpay::Invoice do
     end
 
     it "使用 ezPay 載具" do
-      buyer = build(:personal_buyer)
       carrier = build(:ezpay_carrier)
 
       invoice = Ezpay::PersonalInvoice.new(buyer:, carrier:, print_flag: false)
@@ -37,19 +33,39 @@ RSpec.describe Ezpay::Invoice do
     end
 
     it "愛心捐贈，想要印發票" do
-      buyer = build(:personal_buyer)
       carrier = build(:donation_carrier)
 
       invoice = Ezpay::PersonalInvoice.new(buyer:, carrier:, print_flag: true)
 
       expect(invoice.print_flag).to be true
     end
+
+    context "購買商品" do
+      it "單項應稅商品" do
+        taxable_item = build(:order_item)
+        order = build(:order, item: taxable_item)
+
+        invoice = Ezpay::PersonalInvoice.new(buyer:, order:)
+
+        expect(invoice.total_amount).to be order.total_amount
+      end
+
+      it "多項應稅、免稅商品" do
+        taxable_items = build_list(:order_item, 3)
+        tax_exemption_items = build_list(:order_item, 2, :tax_exemption)
+        order = build(:order, item: taxable_items + tax_exemption_items)
+
+        invoice = Ezpay::PersonalInvoice.new(buyer:, order:)
+
+        expect(invoice.total_amount).to be order.total_amount
+      end
+    end
   end
 
   context "公司發票（B2B）" do
-    it "建立發票" do
-      buyer = build(:company_buyer)
+    let(:buyer) { build(:company_buyer) }
 
+    it "建立發票" do
       invoice = Ezpay::CompanyInvoice.new(buyer:)
       expect(invoice.print_flag).to be true
     end

@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
+require "forwardable"
+
 module Ezpay
   class Invoice
-    attr_reader :print_flag, :buyer
+    extend Forwardable
+    attr_reader :print_flag, :buyer, :order
 
-    def initialize(buyer:, category:, print_flag:, carrier:, comment:)
+    def initialize(buyer:, category:, print_flag:, carrier:, comment:, order:)
       if not buyer.is_a?(Buyer)
         raise Ezpay::Invoice::Error::BuyerError, "買受人格式錯誤"
       end
@@ -21,20 +24,43 @@ module Ezpay
       @category = category
       @print_flag = print_flag
       @carrier = carrier
+      @order = order
     end
+
+    def_delegators :@order, :total_amount
   end
 
   class PersonalInvoice < Invoice
-    def initialize(buyer:, print_flag: false, carrier: nil, comment: nil)
+    def initialize(
+      buyer:,
+      print_flag: false,
+      carrier: nil,
+      comment: nil,
+      order: nil
+    )
       # 如果沒設定任何載具或捐贈，print_flag 設定為 true
       print_flag = true if carrier.nil?
-      super(category: :personal, buyer:, print_flag:, carrier:, comment:)
+      super(
+        category: :personal,
+        buyer:,
+        print_flag:,
+        carrier:,
+        comment:,
+        order:
+      )
     end
   end
 
   class CompanyInvoice < Invoice
-    def initialize(buyer:, carrier: nil, comment: nil)
-      super(category: :company, buyer:, print_flag: true, carrier:, comment:)
+    def initialize(buyer:, carrier: nil, comment: nil, order: nil)
+      super(
+        category: :company,
+        buyer:,
+        print_flag: true,
+        carrier:,
+        comment:,
+        order:
+      )
     end
   end
 end

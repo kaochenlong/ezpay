@@ -4,14 +4,17 @@ module Ezpay
   class Invoice
     class Order
       attr_reader :items
+      attr_accessor :serial
 
-      def initialize(item: nil)
+      def initialize(item: nil, serial: nil)
         @items = []
         if item.is_a?(Array)
           @items = item
         elsif item
           add_item(item)
         end
+
+        @serial = serial
       end
 
       def add_item(item = nil)
