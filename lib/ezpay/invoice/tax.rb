@@ -3,6 +3,7 @@
 # 應稅：taxable
 # 免稅：tax_exemption
 # 零稅率：tax_zero
+
 module Ezpay
   module Invoice
     class Tax

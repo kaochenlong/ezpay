@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "forwardable"
+require 'forwardable'
 
 module Ezpay
   module Invoice
@@ -12,18 +12,18 @@ module Ezpay
         name: nil,
         price: nil,
         quantity: 1,
-        unit: ENV["DEFAULT_UNIT"],
+        unit: ENV.fetch('DEFAULT_UNIT', nil),
         tax_type: :taxable,
-        tax_rate: ENV["DEFAULT_TAX_RATE"].to_i
+        tax_rate: ENV['DEFAULT_TAX_RATE'].to_i
       )
         if name.nil?
           raise Ezpay::Invoice::Error::OrderItemFieldMissingError,
-                "item name is required"
+                'item name is required'
         end
 
         if price.nil?
           raise Ezpay::Invoice::Error::OrderItemFieldMissingError,
-                "item price is required"
+                'item price is required'
         end
 
         @name = name
@@ -34,8 +34,8 @@ module Ezpay
       end
 
       # 法規名稱：加值型及非加值型營業稅法
-      # 第 14 條 營業人銷售貨物或勞務，除本章第二節另有規定外，均應就銷售額，分別按第七條或第十條規定計算其銷項稅額
-      # 尾數不滿通用貨幣一元者，按四捨五入計算。
+      # 第 14 條 營業人銷售貨物或勞務，除本章第二節另有規定外，均應就銷售額
+      # 分別按第七條或第十條規定計算其銷項稅額，尾數不滿通用貨幣一元者，按四捨五入計算。
       def total_amount
         if taxable?
           (quantity * price * ((100 + tax_rate) / 100.0)).round

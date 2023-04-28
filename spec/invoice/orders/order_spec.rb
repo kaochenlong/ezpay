@@ -1,49 +1,38 @@
 # frozen_string_literal: true
 
 RSpec.describe Ezpay::Invoice::Order do
-  let(:order) { Ezpay::Invoice::Order.new }
-  let(:item) { Ezpay::Invoice::OrderItem.new(name: "為你自己學 Git", price: 100) }
+  let(:order) { build(:order) }
+  let(:item) { build(:order_item, price: 100) }
 
-  context "訂單（Order）只有一個訂單項目（OrderItem）" do
-    it "建立空訂單物件" do
+  context '訂單（Order）只有一個訂單項目（OrderItem）' do
+    it '建立空訂單物件' do
       expect(order).to be_empty
     end
 
-    it "在 new 訂單的時候一併設定購買項目" do
-      order = Ezpay::Invoice::Order.new(item: item)
+    it '在 new 訂單的時候一併設定購買項目' do
+      order = build(:order, item: item)
 
       expect(order).not_to be_empty
       expect(order.items.count).to be 1
     end
 
-    it "或後續幫訂單新增一個訂單項目" do
+    it '或後續幫訂單新增一個訂單項目' do
       order.add_item(item)
 
       expect(order).not_to be_empty
       expect(order.items.count).to be 1
     end
 
-    context "可計算訂單總金額" do
-      it "應稅" do
-        item =
-          Ezpay::Invoice::OrderItem.new(
-            name: "為你自己學 Ruby on Rails",
-            price: 150,
-            quantity: 2
-          )
+    context '可計算訂單總金額' do
+      let(:item) { build(:order_item, price: 150, quantity: 2) }
 
+      it '應稅' do
         order.add_item(item)
 
         expect(order.total_amount).to be 315
       end
 
-      it "免稅" do
-        item =
-          Ezpay::Invoice::OrderItem.new(
-            name: "為你自己學 Ruby on Rails",
-            price: 150,
-            quantity: 2
-          )
+      it '免稅' do
         item.set_tax(type: :tax_exemption)
 
         order.add_item(item)
@@ -53,27 +42,19 @@ RSpec.describe Ezpay::Invoice::Order do
     end
   end
 
-  context "有多個購買項目" do
-    let(:item1) do
-      Ezpay::Invoice::OrderItem.new(
-        name: "為你自己學 Ruby on Rails",
-        price: 150,
-        quantity: 2
-      )
-    end
-    let (:item2) {
-      Ezpay::Invoice::OrderItem.new(name: "為你自己學 Git", price: 200, quantity: 3)
-    }
+  context '有多個購買項目' do
+    let(:item1) { build(:order_item, price: 150, quantity: 2) }
+    let(:item2) { build(:order_item, price: 200, quantity: 3) }
 
-    it "可在 new 訂單的時候設定多個購買項目" do
+    it '可在 new 訂單的時候設定多個購買項目' do
       items = [item1, item2]
 
-      order = Ezpay::Invoice::Order.new(item: items)
+      order = build(:order, item: items)
       expect(order).not_to be_empty
       expect(order.items.count).to be 2
     end
 
-    it "或是後續再加進來" do
+    it '或是後續再加進來' do
       expect(order).to be_empty
 
       order.add_item(item1)
@@ -82,8 +63,8 @@ RSpec.describe Ezpay::Invoice::Order do
       expect(order.items.count).to be 2
     end
 
-    context "可計算總金額" do
-      it "都是應稅項目" do
+    context '可計算總金額' do
+      it '都是應稅項目' do
         order.add_item(item1)
         order.add_item(item2)
 
@@ -93,7 +74,7 @@ RSpec.describe Ezpay::Invoice::Order do
         expect(order.total_amount).to be 945
       end
 
-      it "都是免稅項目" do
+      it '都是免稅項目' do
         item1.set_tax(type: :tax_exemption)
         item2.set_tax(type: :tax_exemption)
 
@@ -106,7 +87,7 @@ RSpec.describe Ezpay::Invoice::Order do
         expect(order.total_amount).to be 900
       end
 
-      it "應稅、免稅混合" do
+      it '應稅、免稅混合' do
         item2.set_tax(type: :tax_exemption)
 
         order.add_item(item1)
