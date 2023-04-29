@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 %w[
+  ezpay/helpers
   ezpay/version
   ezpay/invoice/invoice
   ezpay/invoice/buyer

@@ -7,6 +7,10 @@ FactoryBot.define do
     item { nil }
     serial { nil }
 
+    trait :with_item do
+      item { build(:order_item) }
+    end
+
     initialize_with { new(**attributes) }
   end
 end

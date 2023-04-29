@@ -60,6 +60,47 @@ RSpec.describe Ezpay::Invoice do
         expect(invoice.total_amount).to be order.total_amount
       end
     end
+
+    context "開立發票方式" do
+      it "等待觸發開立發票" do
+        invoice = build(:personal_invoice, issue_method: :wait)
+
+        expect(invoice.issue_method).to be Ezpay::Invoice::IssueMethod::WAIT
+      end
+
+      it "即時開立發票" do
+        issued_at = Date.today + 3
+        invoice = build(:personal_invoice, issue_method: :now, issued_at:)
+
+        expect(invoice.issue_method).to be Ezpay::Invoice::IssueMethod::NOW
+        expect(invoice.issued_at).to be_nil
+      end
+
+      it "預約自動開立發票，須指定預計開立日期" do
+        # 沒填寫開立日期
+        expect {
+          build(:personal_invoice, issue_method: :scheduled)
+        }.to raise_error Ezpay::Invoice::Error::IssueDateError
+
+        # 指定在過去的日期
+        expect {
+          build(
+            :personal_invoice,
+            issue_method: :scheduled,
+            issued_at: Date.today - 7
+          )
+        }.to raise_error Ezpay::Invoice::Error::IssueDateError
+
+        # 指定 7 天後開發票
+        issued_at = Date.today + 7
+        invoice = build(:personal_invoice, issue_method: :scheduled, issued_at:)
+
+        expect(
+          invoice.issue_method
+        ).to be Ezpay::Invoice::IssueMethod::SCHEDULED
+        expect(invoice.issued_at).to eq issued_at.strftime("%Y-%m-%d")
+      end
+    end
   end
 
   context "公司發票（B2B）" do

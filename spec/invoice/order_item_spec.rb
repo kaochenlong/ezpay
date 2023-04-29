@@ -18,7 +18,7 @@ RSpec.describe Ezpay::Invoice::OrderItem do
       expect(item.quantity).to be 2
     end
 
-    it "沒填寫必填品項及價錢會拋出錯誤" do
+    it "沒填寫品項名稱及價錢會拋出錯誤" do
       expect { Ezpay::Invoice::OrderItem.new }.to raise_error(
         Ezpay::Invoice::Error::OrderItemFieldMissingError
       )
@@ -26,7 +26,7 @@ RSpec.describe Ezpay::Invoice::OrderItem do
   end
 
   context "數量及單位" do
-    it "如果沒填寫數量，預設數量 1，單位「件」" do
+    it "如果沒填寫數量，預設數量「1」，單位「件」" do
       expect(item.quantity).to be 1
       expect(item.unit).to eq "件"
     end

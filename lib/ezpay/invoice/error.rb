@@ -5,7 +5,13 @@ require "forwardable"
 module Ezpay
   class Invoice
     module Error
+      class EnumMissingError < StandardError
+      end
+
       class OrderItemFieldMissingError < StandardError
+      end
+
+      class IssueDateError < StandardError
       end
 
       class CompanyUBNFormatError < StandardError

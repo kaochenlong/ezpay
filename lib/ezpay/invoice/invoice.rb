@@ -4,10 +4,25 @@ require "forwardable"
 
 module Ezpay
   class Invoice
-    extend Forwardable
-    attr_reader :print_flag, :buyer, :order
+    module IssueMethod
+      WAIT = 0 # 等待觸發開立發票（預設）
+      NOW = 1 # 即時開立發票
+      SCHEDULED = 3 # 預約自動開立發票
+    end
 
-    def initialize(buyer:, category:, print_flag:, carrier:, comment:, order:)
+    extend Forwardable
+    attr_reader :print_flag, :buyer, :order, :issue_method, :issued_at
+
+    def initialize(
+      buyer:,
+      category:,
+      print_flag:,
+      carrier:,
+      comment:,
+      order:,
+      issue_method:,
+      issued_at:
+    )
       if not buyer.is_a?(Buyer)
         raise Ezpay::Invoice::Error::BuyerError, "買受人格式錯誤"
       end
@@ -25,6 +40,22 @@ module Ezpay
       @print_flag = print_flag
       @carrier = carrier
       @order = order
+      @issue_method = IssueMethod.enum(issue_method)
+      self.issued_at = issued_at
+    end
+
+    def issued_at=(date = nil)
+      if issue_method == IssueMethod::SCHEDULED
+        raise Ezpay::Invoice::Error::IssueDateError, "需指定發票開立日期" if date.nil?
+
+        if date < Date.today
+          raise Ezpay::Invoice::Error::IssueDateError, "指定發票開立日期有誤"
+        end
+
+        @issued_at = date.strftime("%Y-%m-%d")
+      else
+        @issued_at = nil
+      end
     end
 
     def_delegators :@order, :total_amount
@@ -36,7 +67,9 @@ module Ezpay
       print_flag: false,
       carrier: nil,
       comment: nil,
-      order: nil
+      order: nil,
+      issue_method: :wait,
+      issued_at: nil
     )
       # 如果沒設定任何載具或捐贈，print_flag 設定為 true
       print_flag = true if carrier.nil?
@@ -46,28 +79,35 @@ module Ezpay
         print_flag:,
         carrier:,
         comment:,
-        order:
+        order:,
+        issue_method:,
+        issued_at:
       )
     end
   end
 
   class CompanyInvoice < Invoice
-    def initialize(buyer:, carrier: nil, comment: nil, order: nil)
+    def initialize(
+      buyer:,
+      carrier: nil,
+      comment: nil,
+      order: nil,
+      issue_method: :wait,
+      issued_at: nil
+    )
       super(
         category: :company,
         buyer:,
         print_flag: true,
         carrier:,
         comment:,
-        order:
+        order:,
+        issue_method:,
+        issued_at:
       )
     end
   end
 end
-
-# CreateStatusTime：預計開立日期
-# Status 設定 3 才需要提供
-# 格式 YYYY-MM-DD
 
 # CustomsClearance：報關標記
 # 零稅率（TaxRate = 0）才須使用的欄位
@@ -76,11 +116,6 @@ end
 
 # 非必填參數：
 # TransNum：ezPay 平台交易序號，若同時使用 ezPay 金流服務可填寫此欄位，方便對帳。
-
-# MerchantOrderNo：訂單編號
-# 由商店自己決定編碼方式
-# 僅能使用英文字母、數字以及底線 _
-# Regex： /[a-zA-Z0-9_]+/
 
 # KioskPrintFlag：是否開放至合作超 商 Kiosk 列印
 # 當 CarrierType 設定為 2 時，才適用此參數
