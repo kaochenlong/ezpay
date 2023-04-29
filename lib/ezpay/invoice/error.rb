@@ -11,6 +11,9 @@ module Ezpay
       class OrderItemFieldMissingError < StandardError
       end
 
+      class OrderSerialError < StandardError
+      end
+
       class IssueDateError < StandardError
       end
 

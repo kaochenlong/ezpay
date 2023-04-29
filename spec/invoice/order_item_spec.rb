@@ -65,16 +65,20 @@ RSpec.describe Ezpay::Invoice::OrderItem do
       let(:item) { build(:order_item, price: 120, quantity: 2) }
 
       it "應稅" do
-        expect(item.total_amount).to be 240 *
-             (100 + ENV["DEFAULT_TAX_RATE"].to_i) / 100
+        tax_rate = ENV["DEFAULT_TAX_RATE"].to_i
+
+        expect(item.total_amount).to be (240 * (100 + tax_rate) / 100.0).round
+        expect(item.total_tax).to be (240 * (tax_rate / 100.0)).round
       end
 
       it "免稅及零稅率" do
         item.set_tax(type: :tax_exemption)
         expect(item.total_amount).to be 240
+        expect(item.total_tax).to be 0
 
         item.set_tax(type: :tax_zero)
         expect(item.total_amount).to be 240
+        expect(item.total_tax).to be 0
       end
     end
   end

@@ -111,4 +111,55 @@ RSpec.describe Ezpay::Invoice do
       expect(invoice.print_flag).to be true
     end
   end
+
+  context "開立發票" do
+    let(:buyer) { build(:personal_buyer) }
+
+    context "只購買一項商品" do
+      it "應稅商品" do
+        taxable_item = build(:order_item)
+        order = build(:order, item: taxable_item)
+
+        invoice = Ezpay::PersonalInvoice.new(buyer:, order:)
+        p invoice.post_data
+      end
+
+      it "免稅商品" do
+        tax_exemption_item = build(:order_item, :tax_exemption)
+        order = build(:order, item: tax_exemption_item)
+
+        invoice = Ezpay::PersonalInvoice.new(buyer:, order:)
+        p invoice.post_data
+      end
+
+      it "零稅率商品" do
+        tax_zero_item = build(:order_item, :tax_zero)
+        order = build(:order, item: tax_zero_item)
+
+        invoice = Ezpay::PersonalInvoice.new(buyer:, order:)
+        p invoice.post_data
+      end
+    end
+
+    context "購買多項商品" do
+      it "相同稅別（都是免稅）" do
+        tax_exemption_items = build_list(:order_item, 2, :tax_exemption)
+        order = build(:order, item: tax_exemption_items)
+
+        invoice = Ezpay::PersonalInvoice.new(buyer:, order:)
+
+        p invoice.post_data
+      end
+
+      it "混合稅別" do
+        taxable_items = build_list(:order_item, 3)
+        tax_exemption_items = build_list(:order_item, 2, :tax_exemption)
+        order = build(:order, item: taxable_items + tax_exemption_items)
+
+        invoice = Ezpay::PersonalInvoice.new(buyer:, order:)
+
+        p invoice.post_data
+      end
+    end
+  end
 end

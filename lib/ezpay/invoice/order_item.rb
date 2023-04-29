@@ -34,12 +34,17 @@ module Ezpay
       # 法規名稱：加值型及非加值型營業稅法
       # 第 14 條 營業人銷售貨物或勞務，除本章第二節另有規定外，均應就銷售額
       # 分別按第七條或第十條規定計算其銷項稅額，尾數不滿通用貨幣一元者，按四捨五入計算。
-      def total_amount
-        if taxable?
+      def total_amount(with_tax: true)
+        if with_tax && taxable?
           (quantity * price * ((100 + tax_rate) / 100.0)).round
         else
           quantity * price
         end
+      end
+
+      def total_tax
+        return (quantity * price * (tax_rate / 100.0)).round if taxable?
+        0
       end
 
       def tax_rate

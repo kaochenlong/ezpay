@@ -7,26 +7,37 @@
 module Ezpay
   class Invoice
     class Tax
+      module TaxType
+        TAXABLE = "1"
+        TAX_ZERO = "2"
+        TAX_EXEMPTION = "3"
+        MIXED = "9"
+      end
+
       attr_accessor :type, :rate
 
       def initialize(type: :taxable, rate: ENV["DEFAULT_TAX_RATE"].to_i)
-        @type = type
+        self.type = type
         @rate = type == :taxable ? rate : 0
+      end
+
+      def type=(value)
+        @type = TaxType.enum(value)
       end
 
       # 應稅
       def taxable?
-        type == :taxable
+        type == TaxType::TAXABLE
       end
 
       # 免稅
       def tax_exemption?
-        type == :tax_exemption
+        type == TaxType::TAX_EXEMPTION
       end
 
       # 零稅率
       def tax_zero?
-        type == :tax_zero
+        type == TaxType::TAX_ZERO
       end
     end
   end

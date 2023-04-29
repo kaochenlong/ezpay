@@ -1,5 +1,19 @@
 # frozen_string_literal: true
 
+# TODO
+# CustomsClearance：報關標記
+# 零稅率（TaxRate = 0）才須使用的欄位
+# 1 非經海關出口
+# 2 經海關出口
+
+# 非必填參數：
+# TransNum：ezPay 平台交易序號，若同時使用 ezPay 金流服務可填寫此欄位，方便對帳。
+
+# KioskPrintFlag：是否開放至合作超 商 Kiosk 列印
+# 當 CarrierType 設定為 2 時，才適用此參數
+# 若不開放至合作超商 Kiosk 列印，則此參數為空值
+# 1 發票中獎後開放列印（目前為全家便利商店）
+
 require "forwardable"
 
 module Ezpay
@@ -11,7 +25,13 @@ module Ezpay
     end
 
     extend Forwardable
-    attr_reader :print_flag, :buyer, :order, :issue_method, :issued_at
+    attr_reader :print_flag,
+                :buyer,
+                :order,
+                :issue_method,
+                :issued_at,
+                :carrier,
+                :comment
 
     def initialize(
       buyer:,
@@ -58,6 +78,55 @@ module Ezpay
       end
     end
 
+    def post_data
+      # TODO: TransNum, KioskPrintFlag, CustomsClearance
+
+      common = {
+        RespondType: "JSON",
+        Version: "1.5",
+        TimeStamp: Time.now.to_i.to_s,
+        MerchantOrderNo: order.serial,
+        Status: issue_method,
+        CreateStatusTime: issued_at,
+        BuyerName: buyer.name,
+        BuyerUBN: buyer.ubn,
+        BuyerAddress: buyer.address,
+        BuyerEmail: buyer.email,
+        PrintFlag: print_flag ? "Y" : "N",
+        Comment: comment
+      }
+
+      items = {}
+      if order.items.count > 1
+        # 多筆購買項目
+        if order.same_tax_type?
+          items["TaxType"] = order.items.first.tax.type
+          items["TaxRate"] = order.items.first.tax.rate
+        else
+          items["TaxType"] = Ezpay::Invoice::Tax::TaxType::MIXED
+          amounts = order.amounts
+          items["AmtSales"] = amounts[:taxable]
+          items["AmtZero"] = amounts[:tax_zero]
+          items["AmtFree"] = amounts[:tax_exemption]
+          items["ItemTaxType"] = order.item_tax_types
+        end
+      else
+        # 單筆購買項目
+        items["TaxType"] = order.items.first.tax.type
+        items["TaxRate"] = order.items.first.tax.rate
+      end
+
+      items["Amt"] = order.total_amount(with_tax: false) # 發票銷售額（未稅）
+      items["TaxAmt"] = order.total_tax
+      items["TotalAmt"] = order.total_amount
+      items["ItemName"] = order.item_names
+      items["ItemCount"] = order.item_counts
+      items["ItemUnit"] = order.item_units
+      items["ItemPrice"] = order.item_prices
+
+      common.merge(items)
+    end
+
     def_delegators :@order, :total_amount
   end
 
@@ -84,6 +153,17 @@ module Ezpay
         issued_at:
       )
     end
+
+    def post_data
+      data = { Category: "B2C" }
+
+      super.merge(data)
+    end
+    # Category:
+    # CarrierType: carrier
+    # CarrierNum (b2c)
+    # LoveCode (b2c)
+    # ItemAmt (b2c & b2b)
   end
 
   class CompanyInvoice < Invoice
@@ -106,18 +186,11 @@ module Ezpay
         issued_at:
       )
     end
+
+    def post_data
+      data = { Category: "B2B" }
+
+      super.merge(data)
+    end
   end
 end
-
-# CustomsClearance：報關標記
-# 零稅率（TaxRate = 0）才須使用的欄位
-# 1 非經海關出口
-# 2 經海關出口
-
-# 非必填參數：
-# TransNum：ezPay 平台交易序號，若同時使用 ezPay 金流服務可填寫此欄位，方便對帳。
-
-# KioskPrintFlag：是否開放至合作超 商 Kiosk 列印
-# 當 CarrierType 設定為 2 時，才適用此參數
-# 若不開放至合作超商 Kiosk 列印，則此參數為空值
-# 1 發票中獎後開放列印（目前為全家便利商店）
