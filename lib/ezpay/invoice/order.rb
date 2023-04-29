@@ -59,6 +59,10 @@ module Ezpay
         items.map(&:price).join("|")
       end
 
+      def item_total_amounts(with_tax: true)
+        items.map { |item| item.total_amount(with_tax:) }.join("|")
+      end
+
       def item_tax_types
         items.map { |item| item.tax.type }.join("|")
       end

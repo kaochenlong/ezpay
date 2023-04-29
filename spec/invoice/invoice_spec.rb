@@ -116,7 +116,7 @@ RSpec.describe Ezpay::Invoice do
     let(:buyer) { build(:personal_buyer) }
 
     context "只購買一項商品" do
-      it "應稅商品" do
+      it "應稅商品，不使用載具" do
         taxable_item = build(:order_item)
         order = build(:order, item: taxable_item)
 
@@ -124,39 +124,52 @@ RSpec.describe Ezpay::Invoice do
         p invoice.post_data
       end
 
-      it "免稅商品" do
-        tax_exemption_item = build(:order_item, :tax_exemption)
-        order = build(:order, item: tax_exemption_item)
+      it "應稅商品，使用愛心捐贈碼" do
+        taxable_item = build(:order_item)
+        order = build(:order, item: taxable_item)
+        carrier = build(:donation_carrier)
 
-        invoice = Ezpay::PersonalInvoice.new(buyer:, order:)
+        invoice = Ezpay::PersonalInvoice.new(buyer:, order:, carrier:)
         p invoice.post_data
       end
 
-      it "零稅率商品" do
+      it "免稅商品，並且使用手機條碼載具" do
+        tax_exemption_item = build(:order_item, :tax_exemption)
+        order = build(:order, item: tax_exemption_item)
+        carrier = build(:barcode_carrier)
+
+        invoice = Ezpay::PersonalInvoice.new(buyer:, order:, carrier:)
+        p invoice.post_data
+      end
+
+      it "零稅率商品，並使用自然人憑證載具" do
         tax_zero_item = build(:order_item, :tax_zero)
         order = build(:order, item: tax_zero_item)
+        carrier = build(:certificate_carrier)
 
-        invoice = Ezpay::PersonalInvoice.new(buyer:, order:)
+        invoice = Ezpay::PersonalInvoice.new(buyer:, order:, carrier:)
         p invoice.post_data
       end
     end
 
     context "購買多項商品" do
-      it "相同稅別（都是免稅）" do
+      it "相同稅別（都是免稅），個人發票，使用愛心捐類碼" do
         tax_exemption_items = build_list(:order_item, 2, :tax_exemption)
         order = build(:order, item: tax_exemption_items)
+        carrier = build(:donation_carrier)
 
-        invoice = Ezpay::PersonalInvoice.new(buyer:, order:)
+        invoice = Ezpay::PersonalInvoice.new(buyer:, order:, carrier:)
 
         p invoice.post_data
       end
 
-      it "混合稅別" do
+      it "混合稅別，開公司發票" do
+        buyer = build(:company_buyer)
         taxable_items = build_list(:order_item, 3)
         tax_exemption_items = build_list(:order_item, 2, :tax_exemption)
         order = build(:order, item: taxable_items + tax_exemption_items)
 
-        invoice = Ezpay::PersonalInvoice.new(buyer:, order:)
+        invoice = Ezpay::CompanyInvoice.new(buyer:, order:)
 
         p invoice.post_data
       end

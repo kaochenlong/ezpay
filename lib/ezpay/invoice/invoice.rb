@@ -155,15 +155,19 @@ module Ezpay
     end
 
     def post_data
-      data = { Category: "B2C" }
+      data = {
+        Category: "B2C",
+        ItemAmt: order.item_total_amounts(with_tax: true)
+      }
+
+      if carrier&.type == Ezpay::Invoice::Carrier::CarrierType::DONATION
+        data["LoveCode"] = carrier.number
+      else
+        data["CarrierType"] = carrier&.type
+      end
 
       super.merge(data)
     end
-    # Category:
-    # CarrierType: carrier
-    # CarrierNum (b2c)
-    # LoveCode (b2c)
-    # ItemAmt (b2c & b2b)
   end
 
   class CompanyInvoice < Invoice
@@ -188,7 +192,12 @@ module Ezpay
     end
 
     def post_data
-      data = { Category: "B2B" }
+      data = {
+        Category: "B2B",
+        CarrierType: nil,
+        LoveCode: nil,
+        ItemAmt: order.item_total_amounts(with_tax: false)
+      }
 
       super.merge(data)
     end

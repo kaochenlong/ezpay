@@ -3,11 +3,22 @@
 module Ezpay
   class Invoice
     class Carrier
-      attr_accessor :type, :number
+      module CarrierType
+        BARCODE = "0"
+        CERTIFICATE = "1"
+        EZPAY = "2"
+        DONATION = "9"
+      end
 
-      def initialize(type: nil, number: nil)
-        @type = type
+      attr_reader :type, :number
+
+      def initialize(type:, number:)
+        self.type = type
         @number = number
+      end
+
+      def type=(value)
+        @type = CarrierType.enum(value)
       end
 
       def valid?
@@ -17,7 +28,7 @@ module Ezpay
 
     class BarcodeCarrier < Carrier
       def initialize(number)
-        super(type: :barcode, number: number)
+        super(type: :barcode, number:)
       end
 
       def valid?
@@ -27,7 +38,7 @@ module Ezpay
 
     class CertificateCarrier < Carrier
       def initialize(number)
-        super(type: :certificate, number: number)
+        super(type: :certificate, number:)
       end
 
       def valid?
@@ -37,7 +48,7 @@ module Ezpay
 
     class EzPayCarrier < Carrier
       def initialize(number)
-        super(type: :ezpay, number: number)
+        super(type: :ezpay, number:)
       end
 
       def valid?
@@ -47,7 +58,7 @@ module Ezpay
 
     class DonationCarrier < Carrier
       def initialize(number)
-        super(type: :donation, number: number)
+        super(type: :donation, number:)
       end
 
       def valid?
