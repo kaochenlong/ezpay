@@ -23,6 +23,13 @@ RSpec.describe Ezpay::Invoice::OrderItem do
         Ezpay::Invoice::Error::OrderItemFieldMissingError
       )
     end
+
+    # 當多個品項是用「|」進行組合，若商品名稱中帶有該字元可能會造成誤判
+    it "如果品名中帶有「|」字元將會替換成「-」" do
+      item = build(:order_item, name: "為你自己學 Ruby on Rails | 最厲害的 Ruby 中文書")
+
+      expect(item.name).to eq "為你自己學 Ruby on Rails - 最厲害的 Ruby 中文書"
+    end
   end
 
   context "數量及單位" do

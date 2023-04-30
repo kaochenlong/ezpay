@@ -36,11 +36,11 @@ module Ezpay
       end
 
       def total_amount(with_tax: true)
-        items.map { |item| item.total_amount(with_tax:) }.sum
+        items.sum { |item| item.total_amount(with_tax:) }
       end
 
       def total_tax
-        items.map(&:total_tax).sum
+        items.sum(&:total_tax)
       end
 
       def item_names
@@ -55,8 +55,8 @@ module Ezpay
         items.map(&:unit).join("|")
       end
 
-      def item_prices
-        items.map(&:price).join("|")
+      def item_prices(with_tax: true)
+        items.map { |item| item.price(with_tax:) }.join("|")
       end
 
       def item_total_amounts(with_tax: true)
@@ -72,12 +72,9 @@ module Ezpay
         taxable =
           items
             .filter(&:taxable?)
-            .map { |item| item.total_amount(with_tax: false) }
-            .sum
-        tax_zero =
-          items.filter(&:tax_zero?).map { |item| item.total_amount }.sum
-        tax_exemption =
-          items.filter(&:tax_exemption?).map { |item| item.total_amount }.sum
+            .sum { |item| item.total_amount(with_tax: false) }
+        tax_zero = items.filter(&:tax_zero?).sum(&:total_amount)
+        tax_exemption = items.filter(&:tax_exemption?).sum(&:total_amount)
 
         { taxable:, tax_zero:, tax_exemption: }
       end

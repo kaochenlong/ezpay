@@ -19,9 +19,9 @@ require "forwardable"
 module Ezpay
   class Invoice
     module IssueMethod
-      WAIT = 0 # 等待觸發開立發票（預設）
-      NOW = 1 # 即時開立發票
-      SCHEDULED = 3 # 預約自動開立發票
+      WAIT = "0" # 等待觸發開立發票（預設）
+      NOW = "1" # 即時開立發票
+      SCHEDULED = "3" # 預約自動開立發票
     end
 
     extend Forwardable
@@ -96,33 +96,28 @@ module Ezpay
         Comment: comment
       }
 
-      items = {}
-      if order.items.count > 1
-        # 多筆購買項目
-        if order.same_tax_type?
-          items["TaxType"] = order.items.first.tax.type
-          items["TaxRate"] = order.items.first.tax.rate
-        else
-          items["TaxType"] = Ezpay::Invoice::Tax::TaxType::MIXED
-          amounts = order.amounts
-          items["AmtSales"] = amounts[:taxable]
-          items["AmtZero"] = amounts[:tax_zero]
-          items["AmtFree"] = amounts[:tax_exemption]
-          items["ItemTaxType"] = order.item_tax_types
-        end
-      else
-        # 單筆購買項目
-        items["TaxType"] = order.items.first.tax.type
-        items["TaxRate"] = order.items.first.tax.rate
-      end
+      items = {
+        Amt: order.total_amount(with_tax: false), # 發票銷售額（未稅）
+        TaxAmt: order.total_tax,
+        TotalAmt: order.total_amount,
+        ItemName: order.item_names,
+        ItemCount: order.item_counts,
+        ItemUnit: order.item_units,
+        TaxType: order.items.first.tax.type,
+        TaxRate: order.items.first.tax.rate
+      }
 
-      items["Amt"] = order.total_amount(with_tax: false) # 發票銷售額（未稅）
-      items["TaxAmt"] = order.total_tax
-      items["TotalAmt"] = order.total_amount
-      items["ItemName"] = order.item_names
-      items["ItemCount"] = order.item_counts
-      items["ItemUnit"] = order.item_units
-      items["ItemPrice"] = order.item_prices
+      # 多筆購買項目而且不同課稅別
+      if order.items.count > 1 && !order.same_tax_type?
+        items[:TaxType] = Ezpay::Invoice::Tax::TaxType::MIXED
+        amounts = order.amounts
+        items[:AmtSales] = amounts[:taxable]
+        items[:AmtZero] = amounts[:tax_zero]
+        items[:AmtFree] = amounts[:tax_exemption]
+        items[:ItemTaxType] = order.item_tax_types
+        items[:Amt] = amounts[:taxable] + amounts[:tax_zero] +
+          amounts[:tax_exemption]
+      end
 
       common.merge(items)
     end
@@ -157,16 +152,17 @@ module Ezpay
     def post_data
       data = {
         Category: "B2C",
+        ItemPrice: order.item_prices(with_tax: true),
         ItemAmt: order.item_total_amounts(with_tax: true)
       }
 
       if carrier&.type == Ezpay::Invoice::Carrier::CarrierType::DONATION
-        data["LoveCode"] = carrier.number
+        data[:LoveCode] = carrier.number
       else
-        data["CarrierType"] = carrier&.type
+        data[:CarrierType] = carrier&.type
       end
 
-      super.merge(data)
+      super.merge(data).compact
     end
   end
 
@@ -179,6 +175,11 @@ module Ezpay
       issue_method: :wait,
       issued_at: nil
     )
+      # 只有個人發票才有混合稅別
+      if order && !order.same_tax_type?
+        raise Ezpay::Invoice::Error::MixedTaxError
+      end
+
       super(
         category: :company,
         buyer:,
@@ -196,10 +197,11 @@ module Ezpay
         Category: "B2B",
         CarrierType: nil,
         LoveCode: nil,
+        ItemPrice: order.item_prices(with_tax: false),
         ItemAmt: order.item_total_amounts(with_tax: false)
       }
 
-      super.merge(data)
+      super.merge(data).compact
     end
   end
 end

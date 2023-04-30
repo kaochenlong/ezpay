@@ -6,7 +6,7 @@ module Ezpay
   class Invoice
     class OrderItem
       extend Forwardable
-      attr_reader :name, :quantity, :price, :unit, :tax
+      attr_reader :name, :quantity, :unit, :tax
 
       def initialize(
         name: nil,
@@ -24,18 +24,30 @@ module Ezpay
           raise Ezpay::Invoice::Error::OrderItemFieldMissingError, "缺少品項售價"
         end
 
-        @name = name
+        self.name = name
         @quantity = quantity
         @price = price
         @unit = unit
         @tax = Tax.new(type: tax_type, rate: tax_rate)
       end
 
+      def name=(value)
+        @name = value.gsub("|", "-")
+      end
+
+      def price(with_tax: false)
+        if with_tax && taxable?
+          (@price * ((100 + tax.rate) / 100.0)).round
+        else
+          @price
+        end
+      end
+
       # 法規名稱：加值型及非加值型營業稅法
       # 第 14 條 營業人銷售貨物或勞務，除本章第二節另有規定外，均應就銷售額
       # 分別按第七條或第十條規定計算其銷項稅額，尾數不滿通用貨幣一元者，按四捨五入計算。
       def total_amount(with_tax: true)
-        if with_tax && taxable?
+        if taxable? && with_tax
           (quantity * price * ((100 + tax_rate) / 100.0)).round
         else
           quantity * price

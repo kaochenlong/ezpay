@@ -31,6 +31,9 @@ module Ezpay
 
       class CommentFormatError < StandardError
       end
+
+      class MixedTaxError < StandardError
+      end
     end
   end
 end

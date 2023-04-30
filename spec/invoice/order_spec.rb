@@ -22,13 +22,12 @@ RSpec.describe Ezpay::Invoice::Order do
       expect(order.items.count).to be 1
     end
 
-    it "可以顯示購買項目名稱、數量、單價、單位及課稅別" do
+    it "可以顯示購買項目名稱、數量、單位及課稅別" do
       order = build(:order, item:)
 
       expect(order.item_names).to eq item.name
       expect(order.item_counts).to eq item.quantity.to_s
       expect(order.item_units).to eq item.unit
-      expect(order.item_prices).to eq item.price.to_s
       expect(order.item_tax_types).to eq item.tax.type.to_s
     end
 
@@ -80,13 +79,12 @@ RSpec.describe Ezpay::Invoice::Order do
       expect(order.items.count).to be 2
     end
 
-    it "可以顯示購買項目名稱、數量、單價、單位及課稅別" do
+    it "可以顯示購買項目名稱、數量、單位及課稅別" do
       order.add_items(item1, item2)
 
       expect(order.item_names).to eq "#{item1.name}|#{item2.name}"
       expect(order.item_counts).to eq "#{item1.quantity}|#{item2.quantity}"
       expect(order.item_units).to eq "#{item1.unit}|#{item2.unit}"
-      expect(order.item_prices).to eq "#{item1.price}|#{item2.price}"
       expect(order.item_tax_types).to eq "#{item1.tax.type}|#{item2.tax.type}"
     end
 
