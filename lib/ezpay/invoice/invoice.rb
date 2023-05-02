@@ -110,8 +110,23 @@ module Ezpay
       common.merge(items)
     end
 
+    def issue!
+      if ready?
+        data = {
+          MerchantID_: client.merchant_id,
+          PostData_: encrypted_post_data
+        }
+
+        client.issue_invoice!(data)
+      end
+    end
+
+    def ready?
+      !order.nil? && client.ready?
+    end
+
+    # delgations
     def_delegators :@order, :total_amount
-    def_delegators :@client, :ready?
 
     # setters
     def client=(value)
@@ -134,6 +149,17 @@ module Ezpay
       else
         @issued_at = nil
       end
+    end
+
+    private
+
+    def encrypted_post_data
+      query_string = URI.encode_www_form(post_data)
+      Ezpay::Encryptor::AES_256_CBC.encrypt(
+        text: query_string,
+        key: client.hash_key,
+        iv: client.hash_iv
+      )
     end
   end
 

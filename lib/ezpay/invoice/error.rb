@@ -8,10 +8,14 @@ module Ezpay
       class EnumMissingError < StandardError
       end
 
-      class OrderItemFieldMissingError < StandardError
+      # Order Errors
+      class OrderError < StandardError
       end
 
-      class OrderSerialError < StandardError
+      class OrderItemFieldMissingError < OrderError
+      end
+
+      class OrderSerialError < OrderError
       end
 
       class IssueDateError < StandardError

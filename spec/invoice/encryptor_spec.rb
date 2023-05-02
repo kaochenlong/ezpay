@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "ezpay/encryptor/aes_256_cbc"
-require "securerandom"
-
 RSpec.describe Ezpay::Encryptor do
   let(:key) { "sEesjGGvgOPyQAPHFTGZ3h2eVMHXqN0S" } # fake key, just for testing purpose
   let(:iv) { "LZg2ghVd5DJ5838c" } # fake iv, just for testing purpose}

@@ -11,6 +11,8 @@
   ezpay/invoice/order
   ezpay/invoice/order_item
   ezpay/invoice/carrier
+  ezpay/invoice/response
+  ezpay/encryptor/aes_256_cbc
 ].each do |mod|
   require mod
 rescue LoadError

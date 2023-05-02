@@ -32,6 +32,24 @@ RSpec.describe Ezpay::Invoice::Client do
 
         expect(invoice).to be_ready
       end
+
+      it "如果沒有訂單，無法開立發票" do
+        invoice = build(:personal_invoice, order: nil)
+
+        expect(invoice).not_to be_ready
+      end
+    end
+
+    context "開立發票" do
+      context "個人發票（B2C）" do
+        it "開立發票會得到 Response 物件" do
+          invoice = build(:personal_invoice)
+
+          result = invoice.issue!
+
+          expect(result).to be_an(Ezpay::Invoice::Response)
+        end
+      end
     end
   end
 end
