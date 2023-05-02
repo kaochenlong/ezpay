@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "faker"
+require "securerandom"
 
 FactoryBot.define do
   factory :order, class: Ezpay::Invoice::Order do
     item { nil }
-    serial { Faker::Internet.uuid.delete("-").upcase[-20..-1] }
+    serial { SecureRandom.alphanumeric(20).upcase }
 
     trait :with_item do
       item { build(:order_item) }

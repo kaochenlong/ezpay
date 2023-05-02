@@ -31,10 +31,6 @@ module Ezpay
         @tax = Tax.new(type: tax_type, rate: tax_rate)
       end
 
-      def name=(value)
-        @name = value.gsub("|", "-")
-      end
-
       def price(with_tax: false)
         if with_tax && taxable?
           (@price * ((100 + tax.rate) / 100.0)).round
@@ -63,10 +59,6 @@ module Ezpay
         @tax.rate
       end
 
-      def tax_rate=(new_tax_rate = 0)
-        @tax.rate = new_tax_rate if new_tax_rate.positive?
-      end
-
       # 設定稅別
       def set_tax(type:, rate: 0)
         @tax.type = type
@@ -75,6 +67,15 @@ module Ezpay
       end
 
       def_delegators :@tax, :taxable?, :tax_exemption?, :tax_zero?
+
+      # setters
+      def tax_rate=(new_tax_rate = 0)
+        @tax.rate = new_tax_rate if new_tax_rate.positive?
+      end
+
+      def name=(value)
+        @name = value.gsub("|", "-")
+      end
     end
   end
 end

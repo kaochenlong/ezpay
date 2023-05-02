@@ -34,6 +34,9 @@ module Ezpay
 
       class MixedTaxError < StandardError
       end
+
+      class ClientError < StandardError
+      end
     end
   end
 end

@@ -21,10 +21,6 @@ module Ezpay
         @rate = type == :taxable ? rate : 0
       end
 
-      def type=(value)
-        @type = TaxType.enum(value)
-      end
-
       # 應稅
       def taxable?
         type == TaxType::TAXABLE
@@ -38,6 +34,11 @@ module Ezpay
       # 零稅率
       def tax_zero?
         type == TaxType::TAX_ZERO
+      end
+
+      # setters
+      def type=(value)
+        @type = TaxType.enum(value)
       end
     end
   end

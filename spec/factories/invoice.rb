@@ -3,6 +3,7 @@
 FactoryBot.define do
   factory :invoice, class: Ezpay::Invoice do
     order { build(:order, :with_item) }
+    client { build(:client) }
 
     trait :personal do
       buyer { build(:personal_buyer) }

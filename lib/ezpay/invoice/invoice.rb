@@ -31,7 +31,8 @@ module Ezpay
                 :issue_method,
                 :issued_at,
                 :carrier,
-                :comment
+                :comment,
+                :client
 
     def initialize(
       buyer:,
@@ -41,7 +42,8 @@ module Ezpay
       comment:,
       order:,
       issue_method:,
-      issued_at:
+      issued_at:,
+      client:
     )
       if not buyer.is_a?(Buyer)
         raise Ezpay::Invoice::Error::BuyerError, "買受人格式錯誤"
@@ -62,25 +64,11 @@ module Ezpay
       @order = order
       @issue_method = IssueMethod.enum(issue_method)
       self.issued_at = issued_at
+      self.client = client
     end
 
-    def issued_at=(date = nil)
-      if issue_method == IssueMethod::SCHEDULED
-        raise Ezpay::Invoice::Error::IssueDateError, "需指定發票開立日期" if date.nil?
-
-        if date < Date.today
-          raise Ezpay::Invoice::Error::IssueDateError, "指定發票開立日期有誤"
-        end
-
-        @issued_at = date.strftime("%Y-%m-%d")
-      else
-        @issued_at = nil
-      end
-    end
-
+    # TODO: TransNum, KioskPrintFlag, CustomsClearance
     def post_data
-      # TODO: TransNum, KioskPrintFlag, CustomsClearance
-
       common = {
         RespondType: "JSON",
         Version: "1.5",
@@ -123,8 +111,35 @@ module Ezpay
     end
 
     def_delegators :@order, :total_amount
+    def_delegators :@client, :ready?
+
+    # setters
+    def client=(value)
+      if value
+        @client = value
+      else
+        @client = Ezpay::Invoice::Client.new
+      end
+    end
+
+    def issued_at=(date = nil)
+      if issue_method == IssueMethod::SCHEDULED
+        raise Ezpay::Invoice::Error::IssueDateError, "需指定發票開立日期" if date.nil?
+
+        if date < Date.today
+          raise Ezpay::Invoice::Error::IssueDateError, "指定發票開立日期有誤"
+        end
+
+        @issued_at = date.strftime("%Y-%m-%d")
+      else
+        @issued_at = nil
+      end
+    end
   end
 
+  # ---------------------
+  # Personal Invoice(B2C)
+  # ---------------------
   class PersonalInvoice < Invoice
     def initialize(
       buyer:,
@@ -133,7 +148,8 @@ module Ezpay
       comment: nil,
       order: nil,
       issue_method: :wait,
-      issued_at: nil
+      issued_at: nil,
+      client: nil
     )
       # 如果沒設定任何載具或捐贈，print_flag 設定為 true
       print_flag = true if carrier.nil?
@@ -145,7 +161,8 @@ module Ezpay
         comment:,
         order:,
         issue_method:,
-        issued_at:
+        issued_at:,
+        client:
       )
     end
 
@@ -166,6 +183,9 @@ module Ezpay
     end
   end
 
+  # ---------------------
+  # Company Invoice(B2B)
+  # ---------------------
   class CompanyInvoice < Invoice
     def initialize(
       buyer:,
@@ -173,7 +193,8 @@ module Ezpay
       comment: nil,
       order: nil,
       issue_method: :wait,
-      issued_at: nil
+      issued_at: nil,
+      client: nil
     )
       # 只有個人發票才有混合稅別
       if order && !order.same_tax_type?
@@ -188,7 +209,8 @@ module Ezpay
         comment:,
         order:,
         issue_method:,
-        issued_at:
+        issued_at:,
+        client:
       )
     end
 

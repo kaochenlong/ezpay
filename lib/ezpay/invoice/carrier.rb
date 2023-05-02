@@ -17,12 +17,13 @@ module Ezpay
         @number = number
       end
 
-      def type=(value)
-        @type = CarrierType.enum(value)
-      end
-
       def valid?
         false
+      end
+
+      # setters
+      def type=(value)
+        @type = CarrierType.enum(value)
       end
     end
 
