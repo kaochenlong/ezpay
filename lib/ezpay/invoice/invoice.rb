@@ -203,6 +203,7 @@ module Ezpay
         data[:LoveCode] = carrier.number
       else
         data[:CarrierType] = carrier&.type
+        data[:CarrierNum] = carrier&.number
       end
 
       super.merge(data).compact

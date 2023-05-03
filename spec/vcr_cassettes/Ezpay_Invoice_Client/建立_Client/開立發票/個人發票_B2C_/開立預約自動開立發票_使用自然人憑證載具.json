@@ -1,0 +1,87 @@
+{
+  "http_interactions": [
+    {
+      "request": {
+        "method": "post",
+        "uri": "https://cinv.ezpay.com.tw/Api/invoice_issue",
+        "body": {
+          "encoding": "US-ASCII",
+          "string": "MerchantID_=YOUR-EZPAY-MERCHANT-ID&PostData_=dd6b5a17abba0a655b0615c76e93a2a4358fb31aa87022aa1546dca1d0934eb88275ff79f90c64b76e8db0a32e7fb35556bdd24da182ab71a98c3fcce123c7eab6a5a9f46c8a5f6c28cef5da484846fe507d73e4d21a72dcf21f2f9c112ddf5d26c1c3602f414fe1f1d1320b1dfd396fbb23ae55829036bbb3350176399b13c431fb423a70ba837d9bc448f1d6fa9c37d93ad65da92b8adf4c0b1be8e7d749ed11fb4315df47f12d21496345859cd7008869aaa48e464cf95b29d0ddcc6760886e8ad5456423ad2fb1f17af9824f28b85bf9b7fce882636b7d72dfd346921a760e957de4fb75d2e1b46f1c7610190db0b45d024042e3dedd863af30c0f42e5ff08b4b8d55372af9b3d2f5f599dc1b542d3740339e89add774cf37cf2b23546626b185a01a4c4b70ae13acf69c3ad08b637faad47d99c9c7b4929bd55043e73cae5bed82670551af7b3ccd232718fdc11aa6339a8c5f2d7b885a75cfba468b9d99ff501e6a0f26e35ef8d13b24632026fbdfe7bd54b21a628e7838b8786ab56a471582eedf362473026469fbea6b7047a9708e76a389c3bc8d3bf1b734ef074055a63bd2fb4b3f7abdefae8a830cc086fb9b299b9dfca91ad9a6f614e43a3e54af90322d69a9e8ea670f592e26a778d72abbefd083a40f9cf8764b4f71184ffd4"
+        },
+        "headers": {
+          "Accept-Encoding": [
+            "gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
+          ],
+          "Accept": [
+            "*/*"
+          ],
+          "User-Agent": [
+            "Ruby"
+          ],
+          "Host": [
+            "cinv.ezpay.com.tw"
+          ],
+          "Content-Type": [
+            "application/x-www-form-urlencoded"
+          ]
+        }
+      },
+      "response": {
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "headers": {
+          "X-Frame-Options": [
+            "SAMEORIGIN"
+          ],
+          "Frame-Options": [
+            "SAMEORIGIN"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=16070400; includeSubDomains ; preload"
+          ],
+          "X-Xss-Protection": [
+            "1;mode=block"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ],
+          "Content-Length": [
+            "362"
+          ],
+          "Content-Type": [
+            "text/html; charset=UTF-8"
+          ],
+          "Expires": [
+            "Wed, 03 May 2023 04:23:42 GMT"
+          ],
+          "Cache-Control": [
+            "max-age=0, no-cache, private"
+          ],
+          "Pragma": [
+            "no-cache"
+          ],
+          "Date": [
+            "Wed, 03 May 2023 04:23:42 GMT"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Set-Cookie": [
+            "PHPSESSID=104551af9130e95478063d6864c4b4dd; path=/; secure; HttpOnly;HttpOnly;Secure"
+          ],
+          "Content-Security-Policy": [
+            "default-src 'self' https://p.typekit.net https://use.typekit.net; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://use.typekit.net https://www.googletagmanager.com https://www.google-analytics.com *.ezpay.com.tw; style-src 'self' 'unsafe-inline' https://use.fontawesome.com *.ezpay.com.tw; img-src 'self' https: data:; font-src 'self' https://use.fontawesome.com https://use.typekit.net https://themes.googleusercontent.com/; object-src 'none'; frame-src 'self' https://www.youtube.com/; connect-src 'self' https://www.google-analytics.com"
+          ]
+        },
+        "body": {
+          "encoding": "UTF-8",
+          "string": "{\"Status\":\"SUCCESS\",\"Message\":\"\\u767c\\u7968\\u958b\\u7acb\\u6210\\u529f\",\"Result\":\"{\\\"CheckCode\\\":\\\"9C2E2D89B6C5A504501694AC867E2F52B858E98E0414521FDE05D0EFD31DEA88\\\",\\\"MerchantID\\\":\\\"YOUR-EZPAY-MERCHANT-ID\\\",\\\"MerchantOrderNo\\\":\\\"TJY23KL58AAEION5HUS6\\\",\\\"InvoiceNumber\\\":\\\"\\\",\\\"TotalAmt\\\":495,\\\"InvoiceTransNo\\\":\\\"23050312234214389\\\",\\\"RandomNum\\\":\\\"8973\\\",\\\"CreateTime\\\":\\\"\\\"}\"}"
+        }
+      },
+      "recorded_at": "Wed, 03 May 2023 04:23:42 GMT"
+    }
+  ],
+  "recorded_with": "VCR 6.1.0"
+}

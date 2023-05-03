@@ -1,0 +1,87 @@
+{
+  "http_interactions": [
+    {
+      "request": {
+        "method": "post",
+        "uri": "https://cinv.ezpay.com.tw/Api/invoice_issue",
+        "body": {
+          "encoding": "US-ASCII",
+          "string": "MerchantID_=YOUR-EZPAY-MERCHANT-ID&PostData_=dd6b5a17abba0a655b0615c76e93a2a4358fb31aa87022aa1546dca1d0934eb8d297bf3142496ddb2e07f5ce1bd6dfc7b8966754fd904b0e971dbbdbe77d5dec7f3cc23be956046bbbe602e8c8aa236e4025e433a916ce915a2c7b9373fb5dbe16b60c3da52d63e7f4650554ab55da4ca76ca9efe6f74bf39b90dd33cd35356850952d7c9d7047f55a037a4d092992a01e3bb44e26b4d4368de53bbe662679df83b9e3e6f740673dce33b88663eb61c54d2bca7eb65886ffd8c3f80318551122c63982fb24378d519664eb7ad125959820b5864a857823c23b20e5e1c406fc449048912d99440e4dc843e6ac83a574d3742a5b85da4f0e7d844b3b150f56b5c95043e24fb5035d2827af698862ca67298e764cd8845edf551923b14a5ce42bc36d775684e4031778e5b1ed2acfd3248f6583def9ec8dd53e1897cbb4a8ea83053471b161a63f2670ea9574d67ef062b35f74ac2047c78235051e02b1b6d58679f35f477d315f4389b0763aaeed215595be08c22c96f83fd82c0d19e530bbf974"
+        },
+        "headers": {
+          "Accept-Encoding": [
+            "gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
+          ],
+          "Accept": [
+            "*/*"
+          ],
+          "User-Agent": [
+            "Ruby"
+          ],
+          "Host": [
+            "cinv.ezpay.com.tw"
+          ],
+          "Content-Type": [
+            "application/x-www-form-urlencoded"
+          ]
+        }
+      },
+      "response": {
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "headers": {
+          "X-Frame-Options": [
+            "SAMEORIGIN"
+          ],
+          "Frame-Options": [
+            "SAMEORIGIN"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=16070400; includeSubDomains ; preload"
+          ],
+          "X-Xss-Protection": [
+            "1;mode=block"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ],
+          "Content-Length": [
+            "362"
+          ],
+          "Content-Type": [
+            "text/html; charset=UTF-8"
+          ],
+          "Expires": [
+            "Wed, 03 May 2023 04:26:17 GMT"
+          ],
+          "Cache-Control": [
+            "max-age=0, no-cache, private"
+          ],
+          "Pragma": [
+            "no-cache"
+          ],
+          "Date": [
+            "Wed, 03 May 2023 04:26:17 GMT"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Set-Cookie": [
+            "PHPSESSID=c9880e7cbf6569c5b2d34fe02f98c344; path=/; secure; HttpOnly;HttpOnly;Secure"
+          ],
+          "Content-Security-Policy": [
+            "default-src 'self' https://p.typekit.net https://use.typekit.net; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://use.typekit.net https://www.googletagmanager.com https://www.google-analytics.com *.ezpay.com.tw; style-src 'self' 'unsafe-inline' https://use.fontawesome.com *.ezpay.com.tw; img-src 'self' https: data:; font-src 'self' https://use.fontawesome.com https://use.typekit.net https://themes.googleusercontent.com/; object-src 'none'; frame-src 'self' https://www.youtube.com/; connect-src 'self' https://www.google-analytics.com"
+          ]
+        },
+        "body": {
+          "encoding": "UTF-8",
+          "string": "{\"Status\":\"SUCCESS\",\"Message\":\"\\u767c\\u7968\\u958b\\u7acb\\u6210\\u529f\",\"Result\":\"{\\\"CheckCode\\\":\\\"71177D47C80B0A53F7C249B1EB834CE90AEE0D7DCA61DBE4681C46D88C519FA3\\\",\\\"MerchantID\\\":\\\"YOUR-EZPAY-MERCHANT-ID\\\",\\\"MerchantOrderNo\\\":\\\"NRRYJEZCLIAGR3GV5DNF\\\",\\\"InvoiceNumber\\\":\\\"\\\",\\\"TotalAmt\\\":246,\\\"InvoiceTransNo\\\":\\\"23050312261752223\\\",\\\"RandomNum\\\":\\\"7093\\\",\\\"CreateTime\\\":\\\"\\\"}\"}"
+        }
+      },
+      "recorded_at": "Wed, 03 May 2023 04:26:17 GMT"
+    }
+  ],
+  "recorded_with": "VCR 6.1.0"
+}

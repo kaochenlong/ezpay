@@ -41,13 +41,58 @@ RSpec.describe Ezpay::Invoice::Client do
     end
 
     context "開立發票" do
+      let(:client) do
+        Ezpay::Invoice::Client.new(
+          merchant_id: "34884285",
+          hash_key: "wssZVYeLltlQgeagP0AghNtuvgytejqz",
+          hash_iv: "CDibtBWdmwvXOJCP"
+        )
+      end
+
       context "個人發票（B2C）" do
-        it "開立發票會得到 Response 物件" do
-          invoice = build(:personal_invoice)
+        it "開立等待觸發開立發票（預設），不使用載具", :vcr do
+          invoice = build(:personal_invoice, client:)
 
           result = invoice.issue!
 
           expect(result).to be_an(Ezpay::Invoice::Response)
+          expect(result).to be_success
+        end
+
+        it "開立預約自動開立發票，使用自然人憑證載具", :vcr do
+          carrier = build(:certificate_carrier)
+          invoice =
+            build(
+              :personal_invoice,
+              client:,
+              carrier:,
+              issue_method: :scheduled,
+              issued_at: Date.today + 3
+            )
+
+          result = invoice.issue!
+
+          expect(result).to be_an(Ezpay::Invoice::Response)
+          expect(result).to be_success
+        end
+
+        it "立即開立發票，使用手機條碼載具", :vcr do
+          invoice = build(:personal_invoice, client:)
+
+          result = invoice.issue!
+
+          expect(result).to be_an(Ezpay::Invoice::Response)
+        end
+      end
+
+      context "公司發票（B2C）" do
+        it "立即開立發票", :vcr do
+          invoice = build(:company_invoice, client:, issue_method: :now)
+
+          result = invoice.issue!
+
+          expect(result).to be_an(Ezpay::Invoice::Response)
+          p result
         end
       end
     end
