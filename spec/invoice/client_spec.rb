@@ -43,15 +43,28 @@ RSpec.describe Ezpay::Invoice::Client do
     context "開立發票" do
       let(:client) do
         Ezpay::Invoice::Client.new(
-          merchant_id: "34884285",
-          hash_key: "wssZVYeLltlQgeagP0AghNtuvgytejqz",
-          hash_iv: "CDibtBWdmwvXOJCP"
+          merchant_id: ENV["EZPAY_MERCHANT_ID"],
+          hash_key: ENV["EZPAY_HASH_KEY"],
+          hash_iv: ENV["EZPAY_HASH_IV"]
         )
       end
 
       context "個人發票（B2C）" do
         it "開立等待觸發開立發票（預設），不使用載具", :vcr do
           invoice = build(:personal_invoice, client:)
+
+          result = invoice.issue!
+
+          expect(result).to be_an(Ezpay::Invoice::Response)
+          expect(result).to be_success
+        end
+
+        it "多個購買項目，開立等待觸發開立發票（預設），使用捐贈碼", :vcr do
+          carrier = build(:donation_carrier)
+          items = build_list(:taxable_items, 3)
+          order = build(:order, item: items)
+
+          invoice = build(:personal_invoice, client:, order:, carrier:)
 
           result = invoice.issue!
 
@@ -77,22 +90,39 @@ RSpec.describe Ezpay::Invoice::Client do
         end
 
         it "立即開立發票，使用手機條碼載具", :vcr do
-          invoice = build(:personal_invoice, client:)
+          carrier = build(:barcode_carrier)
+          invoice =
+            build(:personal_invoice, client:, issue_method: :now, carrier:)
+
+          result = invoice.issue!
+
+          expect(result).to be_an(Ezpay::Invoice::Response)
+          expect(result).to be_success
+        end
+      end
+
+      context "公司發票（B2C）" do
+        it "預約開立發票", :vcr do
+          invoice =
+            build(
+              :company_invoice,
+              client:,
+              issue_method: :scheduled,
+              issued_at: Date.today + 8
+            )
 
           result = invoice.issue!
 
           expect(result).to be_an(Ezpay::Invoice::Response)
         end
-      end
 
-      context "公司發票（B2C）" do
         it "立即開立發票", :vcr do
           invoice = build(:company_invoice, client:, issue_method: :now)
 
           result = invoice.issue!
 
           expect(result).to be_an(Ezpay::Invoice::Response)
-          p result
+          expect(result).to be_success
         end
       end
     end

@@ -41,6 +41,9 @@ module Ezpay
 
       class ClientError < StandardError
       end
+
+      class CheckCodeError < StandardError
+      end
     end
   end
 end

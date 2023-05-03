@@ -21,6 +21,10 @@ FactoryBot.define do
       tax_type { :tax_exemption }
     end
 
+    factory :taxable_items, traits: [:taxable]
+    factory :tax_zero_items, traits: [:tax_zero]
+    factory :tax_exemption_items, traits: [:tax_exemption]
+
     initialize_with { new(**attributes) }
   end
 end
