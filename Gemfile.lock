@@ -11,17 +11,24 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
+    addressable (2.8.4)
+      public_suffix (>= 2.0.2, < 6.0)
     concurrent-ruby (1.2.2)
+    crack (0.4.5)
+      rexml
     diff-lcs (1.5.0)
     dotenv (2.8.1)
     factory_bot (6.2.1)
       activesupport (>= 5.0.0)
     faker (3.2.0)
       i18n (>= 1.8.11, < 2)
+    hashdiff (1.0.1)
     i18n (1.13.0)
       concurrent-ruby (~> 1.0)
     minitest (5.18.0)
+    public_suffix (5.0.1)
     rake (13.0.6)
+    rexml (3.2.5)
     rspec (3.12.0)
       rspec-core (~> 3.12.0)
       rspec-expectations (~> 3.12.0)
@@ -37,6 +44,11 @@ GEM
     rspec-support (3.12.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    vcr (6.1.0)
+    webmock (3.18.1)
+      addressable (>= 2.8.0)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
 
 PLATFORMS
   arm64-darwin-21
@@ -48,6 +60,8 @@ DEPENDENCIES
   faker (~> 3.2)
   rake (~> 13.0)
   rspec (~> 3.12)
+  vcr (~> 6.1)
+  webmock (~> 3.18)
 
 BUNDLED WITH
    2.4.10
